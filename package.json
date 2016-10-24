@@ -1,9 +1,9 @@
 {
-  "name": "sequitur",
-  "version": "0.0.0",
+  "name": "evseq",
+  "version": "0.0.2",
   "author": "Mike Solomon <mike@mikesolomon.org> (http://mikesolomon.org)",
   "description": "A sequencer useful for controlling audio, lighting, and anything else that needs to be played, paused, stopped and/or resumed.",
-  "main": "dist/sequitur.js",
+  "main": "dist/evseq.js",
   "scripts": {
     "build": "node_modules/babel-cli/bin/babel.js src --out-dir dist",
     "prepublish": "npm run build",
@@ -14,6 +14,14 @@
     "lodash": "^4.16.4",
     "nanotimer": "^0.3.14",
     "sorted-array": "^2.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mikesol/evseq.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mikesol/evseq/issues",
+    "email": "mike@mikesolomon.org"
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",

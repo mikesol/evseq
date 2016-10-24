@@ -1,6 +1,6 @@
 var expect = require("chai").expect;
-var Sequitur = require("./../dist/sequitur");
-var ril = Sequitur.rerouteIfLate;
+var EvSeq = require("./../dist/evseq");
+var ril = EvSeq.rerouteIfLate;
 var Rx = require('rx'),
   Observable = Rx.Observable,
   EventEmitter = require('events').EventEmitter;
@@ -8,7 +8,7 @@ var Rx = require('rx'),
 asyncTest("Play works correctly", function() {
   var e = new EventEmitter();
   var sum = 0;
-  var seq = new Sequitur(e).at('0s', 'foo', 1)
+  var seq = new EvSeq(e).at('0s', 'foo', 1)
     .at('2.1s', 'foo', 1)
     .at('3.1s', 'foo', 1);
   var subscription = Observable.fromEvent(e, 'foo')
@@ -28,7 +28,7 @@ asyncTest("Extras are passed in", function() {
     sum += x;
     return 'foo';
   };
-  var seq = new Sequitur(e, 3).at('0s', fooify, null)
+  var seq = new EvSeq(e, 3).at('0s', fooify, null)
     .at('2.1s', fooify, null)
     .at('3.1s', fooify, null);
   var subscription = Observable.fromEvent(e, 'foo')
@@ -44,7 +44,7 @@ asyncTest("Extras are passed in", function() {
 asyncTest("Pause works correctly", function() {
   var e = new EventEmitter();
   var sum = 0;
-  var seq = new Sequitur(e).at('0s', 'foo', 1)
+  var seq = new EvSeq(e).at('0s', 'foo', 1)
     .at('2.1s', 'foo', 1)
     .at('3.1s', 'foo', 1);
   var subscription = Observable.fromEvent(e, 'foo')
@@ -62,7 +62,7 @@ asyncTest("Pause works correctly", function() {
 asyncTest("Events with a group are emitted after a softpause", function() {
   var e = new EventEmitter();
   var sum = 0;
-  var seq = new Sequitur(e).at('0s', 'foo', 1)
+  var seq = new EvSeq(e).at('0s', 'foo', 1)
     .at('2.1s', 'foo', 1)
     .at('3.1s', 'foo', 1, 'mygroup')
     .at('4.1s', 'foo', 1, 'mygroup')
@@ -85,7 +85,7 @@ asyncTest("Events with a group are emitted after a softpause", function() {
 asyncTest("Late events are rerouted correctly, even with multiple pauses", function() {
   var e = new EventEmitter();
   var sum = 0;
-  var seq = new Sequitur(e).at('0s', ril('foo', 'bar'), 1)
+  var seq = new EvSeq(e).at('0s', ril('foo', 'bar'), 1)
     .at('2.1s', ril('foo', 'bar'), 1)
     .at('3.1s', ril('foo', 'bar'), 1)
     .at('3.3s', ril('foo', 'bar'), 1);
@@ -110,7 +110,7 @@ asyncTest("Late events are rerouted correctly, even with multiple pauses", funct
 asyncTest("Stop resets the counter", function() {
   var e = new EventEmitter();
   var sum = 0;
-  var seq = new Sequitur(e).at('0s', ril('foo', 'bar'), 1)
+  var seq = new EvSeq(e).at('0s', ril('foo', 'bar'), 1)
     .at('2.1s', ril('foo', 'bar'), 1)
     .at('3.1s', ril('foo', 'bar'), 1)
     .at('3.3s', ril('foo', 'bar'), 1);
@@ -132,7 +132,7 @@ asyncTest("Stop resets the counter", function() {
 asyncTest("Seek works correctly", function() {
   var e = new EventEmitter();
   var sum = 0;
-  var seq = new Sequitur(e).at('0s', ril('foo', 'bar'), 1)
+  var seq = new EvSeq(e).at('0s', ril('foo', 'bar'), 1)
     .at('2.1s', ril('foo', 'bar'), 1)
     .at('3.1s', ril('foo', 'bar'), 1)
     .at('3.3s', ril('foo', 'bar'), 1);
@@ -150,7 +150,7 @@ asyncTest("Seek works correctly", function() {
 asyncTest("Multiple plays are ignored", function() {
   var e = new EventEmitter();
   var sum = 0;
-  var seq = new Sequitur(e).at('0s', ril('foo', 'bar'), 1)
+  var seq = new EvSeq(e).at('0s', ril('foo', 'bar'), 1)
     .at('2.1s', ril('foo', 'bar'), 1)
     .at('3.1s', ril('foo', 'bar'), 1)
     .at('3.3s', ril('foo', 'bar'), 1);
@@ -172,7 +172,7 @@ asyncTest("Multiple plays are ignored", function() {
 asyncTest("Plays nicely with rx", function() {
   var e = new EventEmitter();
   var sum = 0;
-  var seq = new Sequitur(e).at('0s', 'foo', 1)
+  var seq = new EvSeq(e).at('0s', 'foo', 1)
     .at('2.1s', 'foo', 1)
     .at('3.1s', 'foo', 1);
   var subscription = Observable.fromEvent(e, 'foo')
@@ -190,7 +190,7 @@ asyncTest("Plays nicely with rx", function() {
 asyncTest("Seek skips over events when playing", function() {
   var e = new EventEmitter();
   var sum = 0;
-  var seq = new Sequitur(e).at('0s', ril('foo', 'bar'), 1)
+  var seq = new EvSeq(e).at('0s', ril('foo', 'bar'), 1)
     .at('2.1s', ril('foo', 'bar'), 1)
     .at('3.1s', ril('foo', 'bar'), 1)
     .at('3.3s', ril('foo', 'bar'), 1);
