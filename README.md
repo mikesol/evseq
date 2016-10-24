@@ -38,11 +38,13 @@ seq.stop();
 ```
 
 ## API
+### `constructor`
 ```javascript
 new Sequitur(e: EventEmitter, xtra ?: any)
 ```
 Create a `Sequitur` object that emits events from `e`, passing `xtra` to a calling function at the time of emission.
 
+### `at`
 ```javascript
 Sequitur.at(t: string,
     key: string | (x: number, y: any) => void,
@@ -53,28 +55,33 @@ Schedules an event at time `t`. Time `t` can be expressed in seconds, millisecon
 
 Key `key` and value `value` can be either literals or functions.
 - If they are literals, the are emitted in the traditional sense from the event passed into the `Sequitur` constructor, ie: `e.emit(key, value)`.
-- If they are functions, then the return value of the functions are used for the key and value to the emitter. The function takes two parameters: the first is the error (meaning how late the emission happens compared to the request) and the second are the extra arguments passed to the `Sequitur` constructor.  See [Functions passed to `at`](#functions-passed-to-at).
+- If they are functions, then the return value of the functions are used for the key and value to the emitter. The function takes two parameters: the first is the error (meaning how late the emission happens compared to the request) and the second are the extra arguments passed to the `Sequitur` constructor.  See [Functions passed as arguments to `at`](#functions-passed-as-arguments-to-at).
 
+### `play`
 ```javascript
 Sequitur.play(): void
 ```
 Plays a seequence, picking up from the point at which it was paused or to which it was seeked, otherwise starts from `0s`.
 
+### `pause`
 ```javascript
 Sequitur.pause(): void
 ```
 Pauses a sequence.  `pause` differs from `stop` in that `pause` does not set the timeline to `0s`.
 
+### `stop`
 ```javascript
 Sequitur.stop(): void
 ```
 Stops a sequence.  `stop` differs from `pause` in that `stop` sets the timeline to `0s`.
 
+### `seek`
 ```javascript
 Sequitur.seek(t: string): void
 ```
 Fastforwards a sequence to time `t`. This does not interrupt playing if a sequence is currently playing.
 
+### `softpause`
 ```javascript
 Sequitur.softpause(): void
 ```
@@ -92,13 +99,14 @@ var seq = new Sequitur(e).at('0s', 'foo', 1)
 
 If `softpause` is called between 3.1 and 4.5 seconds, the event at `4.5s` will be emitted.
 
+### `print`
 ```javascript
 Sequitur.print(): void
 ```
 
 Prints information about the sequence to the console.
 
-## Functions passed to `at`
+## Functions passed as arguments to `at`
 As stated above, a function passed to `at` for the key or value is in the form:
 
 ```javascript
