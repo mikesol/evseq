@@ -10,7 +10,7 @@
     "prepublish": "npm run build",
     "test": "./node_modules/.bin/mocha --ui mocha-qunit-ui -b"
   },
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "dependencies": {
     "lodash": "^4.16.4",
     "nanotimer": "^0.3.14",
