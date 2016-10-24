@@ -5,7 +5,7 @@ install:
   - npm install -g codecov
   - npm install -g istanbul
 script:
-  - npm test
+  - npm install
   - istanbul cover node_modules/.bin/_mocha --report lcovonly -- --ui mocha-qunit-ui -b -R spec
   - codecov
 after_success:
