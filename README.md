@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/mikesol/evseq.svg?branch=master)](https://travis-ci.org/mikesol/evseq)
 # evseq
 A simple event sequencer for Node.js.
 
