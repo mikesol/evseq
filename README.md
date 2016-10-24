@@ -40,13 +40,13 @@ seq.stop();
 ## API
 ### `constructor`
 ```javascript
-new Sequitur(e: EventEmitter, xtra ?: any)
+var mySequitur = new Sequitur(e: EventEmitter, xtra ?: any)
 ```
 Create a `Sequitur` object that emits events from `e`, passing `xtra` to a calling function at the time of emission.
 
 ### `at`
 ```javascript
-Sequitur.at(t: string,
+mySequitur.at(t: string,
     key: string | (x: number, y: any) => void,
     val: mixed | (x: number, y: any) => void,
     group ? : string): Sequitur
@@ -59,31 +59,31 @@ Key `key` and value `value` can be either literals or functions.
 
 ### `play`
 ```javascript
-Sequitur.play(): void
+mySequitur.play(): void
 ```
 Plays a seequence, picking up from the point at which it was paused or to which it was seeked, otherwise starts from `0s`.
 
 ### `pause`
 ```javascript
-Sequitur.pause(): void
+mySequitur.pause(): void
 ```
 Pauses a sequence.  `pause` differs from `stop` in that `pause` does not set the timeline to `0s`.
 
 ### `stop`
 ```javascript
-Sequitur.stop(): void
+mySequitur.stop(): void
 ```
 Stops a sequence.  `stop` differs from `pause` in that `stop` sets the timeline to `0s`.
 
 ### `seek`
 ```javascript
-Sequitur.seek(t: string): void
+mySequitur.seek(t: string): void
 ```
 Fastforwards a sequence to time `t`. This does not interrupt playing if a sequence is currently playing.
 
 ### `softpause`
 ```javascript
-Sequitur.softpause(): void
+mySequitur.softpause(): void
 ```
 Like pause, except events in the event's group will execute after the pause.
 For example, in:
@@ -101,10 +101,21 @@ If `softpause` is called between 3.1 and 4.5 seconds, the event at `4.5s` will b
 
 ### `print`
 ```javascript
-Sequitur.print(): void
+mySequitur.print(): void
 ```
 
 Prints information about the sequence to the console.
+
+### `rerouteIfLate`
+```javascript
+Sequitur.rerouteIfLate(ifOnTime: any, ifLate: any): (i: number) => any
+```
+
+Convenience `static` method for rerouting an event if it is late (meaning if it has positive error for its time value - see ([Functions passed as arguments to `at`](#functions-passed-as-arguments-to-at).  The value at `ifOnTime` is returned if the function is ontime, otherwise `ifLate` is returned.  For example:
+
+```javascript
+mySequence.at('10s', Sequitur.rerouteIfLate('eventICareAbout', 'trashbin'), 1)
+```
 
 ## Functions passed as arguments to `at`
 As stated above, a function passed to `at` for the key or value is in the form:
