@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/mikesol/evseq.svg?branch=master)](https://travis-ci.org/mikesol/evseq)
+[![Code Coverage](https://codecov.io/github/mikesol/evseq/coverage.svg?branch=master)
 # evseq
 A simple event sequencer for Node.js.
 
