@@ -6,6 +6,7 @@
   "main": "dist/evseq.js",
   "scripts": {
     "build": "node_modules/babel-cli/bin/babel.js src --out-dir dist",
+    "coverage": "istanbul cover node_modules/.bin/_mocha --report lcovonly -- --ui mocha-qunit-ui -b -R spec && codecov",
     "prepublish": "npm run build",
     "test": "./node_modules/.bin/mocha --ui mocha-qunit-ui -b"
   },
