@@ -61,34 +61,30 @@ var EvSeq = class {
     var _activeGroups = new Set([]);
     var _that = this;
 
-    var fnify = function(key: string | (x: number, y: any) => string,
+    var fnify = (key: string | (x: number, y: any) => string,
       val: mixed | (x: number, y: any) => mixed,
-      group ? : string) {
-      var fnkey = typeof(key) === 'function' ?
-        key : (t, xtra) => typeof(key) === 'string' ? key : null;
+      group ? : string) => {
+      var fnkey = typeof(key) === 'function' ? key : (t, xtra) => key;
       var fnval = typeof(val) === 'function' ? val : (t, xtra) => val;
       return function(t, xtra) {
         if (group) {
           _activeGroups.add(group);
         }
-        var keyres = fnkey(t, xtra);
-        if (keyres) {
-          e.emit(keyres, fnval(t, xtra));
-        }
+        e.emit(fnkey(t, xtra), fnval(t, xtra));
       }
     }
 
-    var reset = function() {
+    var reset = () => {
       _timers = [];
       _activeGroups = new Set([]);
     }
 
-    var clearTimeout = function() {
+    var clearTimeout = () => {
       _timers.forEach((x) => x.clearTimeout());
       reset();
     }
 
-    var softClearTimeout = function() {
+    var softClearTimeout = () => {
       for (var i = 0; i < _timers.length; i++) {
         if (_activeGroups.has(_sequence[i].group) || _timers[i].timeoutTriggered) {
           continue;
