@@ -7,14 +7,13 @@
   "scripts": {
     "build": "node_modules/babel-cli/bin/babel.js src --out-dir dist",
     "coverage": "istanbul cover node_modules/.bin/_mocha --report lcovonly -- --ui mocha-qunit-ui -b -R spec && codecov",
+    "flow": "flow; test $? -eq 0 -o $? -eq 2",
     "prepublish": "npm run build",
     "test": "./node_modules/.bin/mocha --ui mocha-qunit-ui -b"
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "lodash": "^4.16.4",
-    "nanotimer": "^0.3.14",
-    "sorted-array": "^2.0.1"
+    "nanotimer": "^0.3.14"
   },
   "repository": {
     "type": "git",
@@ -29,6 +28,7 @@
     "babel-plugin-transform-flow-strip-types": "^6.14.0",
     "babel-preset-es2015": "^6.16.0",
     "chai": "^3.5.0",
+    "flow-bin": "^0.33.0",
     "mocha": "^3.1.2",
     "mocha-qunit-ui": "^0.1.2",
     "rx": "^4.1.0"

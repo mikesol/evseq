@@ -1,8 +1,6 @@
 // @flow
 
-var _ = require('lodash');
 var NanoTimer = require('nanotimer');
-var SortedArray = require('sorted-array')
 var EventEmitter = require('events').EventEmitter;
 
 var timeToNano = function(interval) {
@@ -35,136 +33,137 @@ var actualStart = function(requested, actual) {
   return Math.max(0, timeToNano(requested) - timeToNano(actual)) + 'n';
 }
 
-var fnify = function(instance, event, key, val, group) {
-  return function(t, xtra) {
-    if (group) {
-      instance.activeGroups.add(group);
-    }
-    event.emit(key(t, xtra), val(t, xtra));
-  }
-}
+var EvSeq = class {
 
-var reset = function(instance) {
-  instance.timers = [];
-  instance.activeGroups = new Set([]);
-}
+  at: (t: string,
+    key: string | (x: number, y: any) => string,
+    val: mixed | (x: number, y: any) => mixed,
+    group ? : string) => EvSeq;
 
-var clearTimeout = function(instance) {
-  instance.timers.forEach((x) => x.clearTimeout());
-  reset(instance);
-}
+  play: () => void;
 
-var softClearTimeout = function(instance) {
-  for (var i = 0; i < instance.timers.length; i++) {
-    if (instance.activeGroups.has(instance.sequence.array[i].group) || instance.timers[i].timeoutTriggered) {
-      continue;
-    }
-    instance.timers[i].clearTimeout();
-  }
-  reset(instance);
-}
+  stop: () => void;
 
-var Sequitur = class {
+  pause: () => void;
 
-  e: EventEmitter;
-  xtra: any;
-  playing: boolean;
-  startedAt: number;
-  timers: Array < NanoTimer > ;
-  sequence: SortedArray;
-  start: string;
-  activeGroups: Set < string > ;
+  softpause: () => void;
+
+  seek: (t: string) => void;
+
+  print: () => void;
 
   constructor(e: EventEmitter, xtra ? : any) {
-    this.e = e;
-    this.xtra = xtra;
-    this.playing = false;
-    this.startedAt = nowns();
-    this.timers = [];
-    this.sequence = SortedArray.comparing((a) => timeToNano(a.t), []);
-    this.start = '0s';
-    this.activeGroups = new Set([]);
-  }
+    var _playing = false;
+    var _startedAt = nowns();
+    var _timers = [];
+    var _sequence = [];
+    var _start = '0s';
+    var _activeGroups = new Set([]);
+    var _that = this;
 
-  at(t: string,
-    key: string | (x: number, y: any) => void,
-    val: mixed | (x: number, y: any) => void,
-    group ? : string): Sequitur {
-    this.sequence.insert({
-      t: t,
-      key: key,
-      val: val,
-      group: group
-    });
-    return this;
-  };
-
-  play(): void {
-    if (this.playing) {
-      console.log("sequitur playing already");
-      return;
+    var fnify = function(key: string | (x: number, y: any) => string,
+      val: mixed | (x: number, y: any) => mixed,
+      group ? : string) {
+      var fnkey = typeof(key) === 'function' ?
+        key : (x, t) => typeof(key) === 'string' ? key : null;
+      var fnval = typeof(val) === 'function' ? val : (x, t) => val;
+      return function(t, xtra) {
+        if (group) {
+          _activeGroups.add(group);
+        }
+        var keyres = fnkey(t, xtra);
+        if (keyres != null) {
+          e.emit(keyres, fnval(t, xtra));
+        }
+      }
     }
-    console.log("playing " + this.sequence.array.length + " elements");
-    this.playing = true;
-    this.startedAt = nowns();
-    this.timers = this.sequence.array
-      .map((v) => ({
-        t: v.t,
-        key: _.isFunction(v.key) ? v.key : (x, y) => v.key,
-        val: _.isFunction(v.val) ? v.val : (x, y) => v.val,
-        group: v.group
-      }))
-      .map((v) => {
+
+    var reset = function() {
+      _timers = [];
+      _activeGroups = new Set([]);
+    }
+
+    var clearTimeout = function() {
+      _timers.forEach((x) => x.clearTimeout());
+      reset();
+    }
+
+    var softClearTimeout = function() {
+      for (var i = 0; i < _timers.length; i++) {
+        if (_activeGroups.has(_sequence[i].group) || _timers[i].timeoutTriggered) {
+          continue;
+        }
+        _timers[i].clearTimeout();
+      }
+      reset();
+    }
+
+    this.at = (t, key, val, group) => {
+      _sequence.push({
+        t: t,
+        key: key,
+        val: val,
+        group: group
+      });
+      return _that;
+    }
+
+    this.play = () => {
+      if (_playing) {
+        console.log("EvSeq playing already");
+        return;
+      }
+      console.log("playing " + _sequence.length + " elements");
+      _playing = true;
+      _startedAt = nowns();
+      _timers = _sequence.map((v) => {
         var nt = new NanoTimer();
-        nt.setTimeout(fnify(this, this.e, v.key, v.val, v.group), [startsThisLate(v.t, this.start), this.xtra],
-          actualStart(v.t, this.start));
+        nt.setTimeout(fnify(v.key, v.val, v.group), [startsThisLate(v.t, _start), xtra],
+          actualStart(v.t, _start));
         return nt;
       });
-  };
+    };
 
-  stop(): void {
-    this.start = '0s'
-    if (this.playing == false) {
-      return;
-    }
-    this.playing = false;
-    clearTimeout(this);
-  };
+    this.stop = () => {
+      _start = '0s'
+      if (_playing == false) {
+        return;
+      }
+      _playing = false;
+      clearTimeout(this);
+    };
 
-  pause(): void {
-    if (this.playing == false) {
-      return;
+    var pause = (soft: boolean) => {
+      if (_playing == false) {
+        return;
+      }
+      _playing = false;
+      soft ? softClearTimeout(this) : clearTimeout(this);
+      _start = (timeToNano(_start) + (nowns() - _startedAt)) + 'n';
     }
-    this.playing = false;
-    clearTimeout(this);
-    this.start = (timeToNano(this.start) + (nowns() - this.startedAt)) + 'n';
-  };
 
-  softpause(): void {
-    if (this.playing == false) {
-      return;
-    }
-    this.playing = false;
-    softClearTimeout(this);
-    this.start = (timeToNano(this.start) + (nowns() - this.startedAt)) + 'n';
-  };
+    this.pause = () => pause(false);
 
-  seek(t: string): void {
-    var localPlaying = this.playing;
-    if (localPlaying) {
-      this.stop();
+    this.softpause = () => pause(true);
+
+    this.seek = (t) => {
+      var localPlaying = _playing;
+      if (localPlaying) {
+        this.stop();
+      }
+      _start = t;
+      if (localPlaying) {
+        this.play();
+      }
+    };
+
+    this.print = () => {
+      _sequence.forEach((x) => console.log(x.t + " " + String(x.key) + " " + String(x.val)))
     }
-    this.start = t;
-    if (localPlaying) {
-      this.play();
-    }
-  };
-  print(): void {
-    this.sequence.array.forEach((x) => console.log(x.t + " " + x.key + " " + x.val))
   }
   static rerouteIfLate(ifOnTime: any, ifLate: any): (i: number) => any {
     return (i) => i > 0 ? ifLate : ifOnTime;
   }
 };
 
-module.exports = Sequitur;
+module.exports = EvSeq;

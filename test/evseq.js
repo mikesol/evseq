@@ -21,6 +21,22 @@ asyncTest("Play works correctly", function() {
   }, 4000);
 });
 
+asyncTest("Erroneous values are emitted at 0", function() {
+  var e = new EventEmitter();
+  var sum = 0;
+  var seq = new EvSeq(e).at('5q', 'foo', 1)
+    .at('6q', 'foo', 1)
+    .at('7q', 'foo', 1);
+  var subscription = Observable.fromEvent(e, 'foo')
+    .subscribe((x) => sum += x);
+  seq.play();
+  setTimeout(function() {
+    seq.stop();
+    equal(3, sum);
+    start();
+  }, 100);
+});
+
 asyncTest("Extras are passed in", function() {
   var e = new EventEmitter();
   var sum = 0;
@@ -28,9 +44,9 @@ asyncTest("Extras are passed in", function() {
     sum += x;
     return 'foo';
   };
-  var seq = new EvSeq(e, 3).at('0s', fooify, null)
-    .at('2.1s', fooify, null)
-    .at('3.1s', fooify, null);
+  var seq = new EvSeq(e, 3).at('0m', fooify, null)
+    .at('2100m', fooify, null)
+    .at('3100m', fooify, null);
   var subscription = Observable.fromEvent(e, 'foo')
     .subscribe((x) => {});
   seq.play();
@@ -44,9 +60,9 @@ asyncTest("Extras are passed in", function() {
 asyncTest("Pause works correctly", function() {
   var e = new EventEmitter();
   var sum = 0;
-  var seq = new EvSeq(e).at('0s', 'foo', 1)
-    .at('2.1s', 'foo', 1)
-    .at('3.1s', 'foo', 1);
+  var seq = new EvSeq(e).at('0u', 'foo', 1)
+    .at('2100000u', 'foo', 1)
+    .at('3100000u', 'foo', 1);
   var subscription = Observable.fromEvent(e, 'foo')
     .subscribe((x) => sum += x);
   seq.play();
@@ -62,14 +78,14 @@ asyncTest("Pause works correctly", function() {
 asyncTest("Events with a group are emitted after a softpause", function() {
   var e = new EventEmitter();
   var sum = 0;
-  var seq = new EvSeq(e).at('0s', 'foo', 1)
-    .at('2.1s', 'foo', 1)
-    .at('3.1s', 'foo', 1, 'mygroup')
-    .at('4.1s', 'foo', 1, 'mygroup')
-    .at('4.4s', 'foo', 1)
-    .at('4.5s', 'foo', 1, 'notmygroup')
-    .at('5.1s', 'foo', 1, 'mygroup')
-    .at('8.1s', 'foo', 1);
+  var seq = new EvSeq(e).at('0n', 'foo', 1)
+    .at('2100000000n', 'foo', 1)
+    .at('3100000000n', 'foo', 1, 'mygroup')
+    .at('4100000000n', 'foo', 1, 'mygroup')
+    .at('4400000000n', 'foo', 1)
+    .at('4500000000n', 'foo', 1, 'notmygroup')
+    .at('5100000000n', 'foo', 1, 'mygroup')
+    .at('8100000000n', 'foo', 1);
   var subscription = Observable.fromEvent(e, 'foo')
     .subscribe((x) => sum += x);
   seq.play();
