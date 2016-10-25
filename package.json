@@ -1,6 +1,6 @@
 {
   "name": "evseq",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "Mike Solomon <mike@mikesolomon.org> (http://mikesolomon.org)",
   "description": "A sequencer useful for controlling audio, lighting, and anything else that needs to be played, paused, stopped and/or resumed.",
   "main": "dist/evseq.js",
