@@ -123,10 +123,10 @@ asyncTest("Late events are rerouted correctly, even with multiple pauses", funct
   }, 2500);
 });
 
-asyncTest("Stop resets the counter", function() {
+asyncTest("Stop resets the counter, and multiple stops have no incidence on this.", function() {
   var e = new EventEmitter();
   var sum = 0;
-  var seq = new EvSeq(e).at('0s', ril('foo', 'bar'), 1)
+  var seq = new EvSeq(e).at('1s', ril('foo', 'bar'), 1)
     .at('2.1s', ril('foo', 'bar'), 1)
     .at('3.1s', ril('foo', 'bar'), 1)
     .at('3.3s', ril('foo', 'bar'), 1);
@@ -136,12 +136,15 @@ asyncTest("Stop resets the counter", function() {
   setTimeout(function() {
     seq.stop();
     setTimeout(function() {
-      seq.play();
+      seq.stop();
       setTimeout(function() {
-        equal(5, sum);
-        start();
-      }, 500);
-    }, 500);
+        seq.play();
+        setTimeout(function() {
+          equal(4, sum);
+          start();
+        }, 200);
+      }, 200);
+    }, 200);
   }, 5000);
 });
 

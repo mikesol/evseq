@@ -113,7 +113,6 @@ var EvSeq = class {
         console.log("EvSeq playing already");
         return;
       }
-      console.log("playing " + _sequence.length + " elements");
       _playing = true;
       _startedAt = nowns();
       _timers = _sequence.map((v) => {
@@ -126,7 +125,7 @@ var EvSeq = class {
 
     this.stop = () => {
       _start = '0s'
-      if (_playing == false) {
+      if (!_playing) {
         return;
       }
       _playing = false;
@@ -134,7 +133,7 @@ var EvSeq = class {
     };
 
     var pause = (soft: boolean) => {
-      if (_playing == false) {
+      if (!_playing) {
         return;
       }
       _playing = false;
