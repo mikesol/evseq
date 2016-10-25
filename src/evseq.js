@@ -65,8 +65,8 @@ var EvSeq = class {
       val: mixed | (x: number, y: any) => mixed,
       group ? : string) {
       var fnkey = typeof(key) === 'function' ?
-        key : (x, t) => typeof(key) === 'string' ? key : null;
-      var fnval = typeof(val) === 'function' ? val : (x, t) => val;
+        key : (t, xtra) => typeof(key) === 'string' ? key : null;
+      var fnval = typeof(val) === 'function' ? val : (t, xtra) => val;
       return function(t, xtra) {
         if (group) {
           _activeGroups.add(group);
