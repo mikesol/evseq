@@ -5,11 +5,10 @@ A simple event sequencer for Node.js.
 
 EvSeq is useful for controlling audio, lighting, and anything else that needs to be played, paused, stopped and/or resumed. It is especially well suited for use with RxJS.
 
-EvSeq is build using flow and transpiled to ES5 from ES6 using babel.
-
 ## Hello world
 
 ```javascript
+var sleep = require('sleep');
 var EvSeq = require("evseq");
 var ril = EvSeq.rerouteIfLate;
 var Rx = require('rx'),
@@ -25,17 +24,17 @@ var seq = new EvSeq(e).at('0s', 'foo', 1)
 var subscription = Observable.fromEvent(e, 'foo')
   .subscribe((x) => sum += x);
 seq.play();
-// wait 2 seconds
-// sum will equal 2
+sleep.sleep(2);
+console.log(sum); // 2
 seq.stop(); // resets
 seq.play();
-// wait 2 seconds
-// sum will equal 2
+sleep.sleep(2);
+console.log(sum); // 2
 seq.pause(); // paused
 seq.play(); // resume
-// wait 2 seconds
+sleep.sleep(2);
 seq.softpause(); // softpause allows pending members of a group to be emitted
-// wait, sum will be 4 because of softpause, but last event is not emitted
+console.log(sum); // 4 because of softpause, but last event is not emitted
 seq.stop();
 ```
 
