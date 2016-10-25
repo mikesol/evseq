@@ -17,7 +17,7 @@ var Rx = require('rx'),
 var e = new EventEmitter();
 var sum = 0;
 var seq = new EvSeq(e).at('0s', 'foo', 1)
-  .at('2.1s', 'foo', 1)
+  .at('1.5s', 'foo', 1)
   .at('3.1s', 'foo', 1, 'aGroupName')
   .at('4.5s', 'foo', 1, 'aGroupName')
   .at('5.8s', 'foo', 1);
