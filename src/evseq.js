@@ -72,7 +72,7 @@ var EvSeq = class {
           _activeGroups.add(group);
         }
         var keyres = fnkey(t, xtra);
-        if (keyres != null) {
+        if (keyres) {
           e.emit(keyres, fnval(t, xtra));
         }
       }
