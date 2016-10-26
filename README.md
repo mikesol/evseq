@@ -8,13 +8,12 @@ EvSeq is useful for controlling audio, lighting, and anything else that needs to
 ## Hello world
 
 ```javascript
-var wait = require('wait.for');
-var sleep = require('sleep');
 var EvSeq = require("evseq");
 var ril = EvSeq.rerouteIfLate('foo', 'ignore');
 var Rx = require('rx');
 var Observable = Rx.Observable;
 var EventEmitter = require('events').EventEmitter;
+var P = require('bluebird').Promise;
 var e = new EventEmitter();
 var sum = 0;
 var seq = new EvSeq(e).at('0s', ril, 1)
@@ -24,27 +23,30 @@ var seq = new EvSeq(e).at('0s', ril, 1)
   .at('5.8s', ril, 1);
 var subscription = Observable.fromEvent(e, 'foo')
   .subscribe((x) => sum += x);
-var waitfor = (t) => (param, callback) => setTimeout(()=>callback(), t*1000);
 
-var program = () => {
-  seq.play();
-  wait.for(waitfor(2),null);
-  console.log(sum); // 2
-  seq.stop(); // resets
-  sum = 0;
-  seq.play();
-  wait.for(waitfor(2),null);
-  console.log(sum); // 2
-  seq.pause(); // paused
-  seq.play(); // resume
-  wait.for(waitfor(2),null);
-  seq.softpause(); // softpause allows pending members of a group to be emitted
-  wait.for(waitfor(2),null);
-  console.log(sum); // 4 because of softpause, but last event is not emitted
-  seq.stop();
-};
-
-wait.launchFiber(program);
+P.resolve(seq.play()).
+  delay(2000).
+  then(()=>{
+    console.log(sum); // 2
+    seq.stop(); // stop rewinds to beginning
+    sum=0; // rest to 0
+    return P.resolve(seq.play())
+  }).
+  delay(2000).
+  then(()=>P.resolve(seq.pause())).
+  delay(2000).
+  then(()=>{
+    console.log(sum); // pause works, will be 2
+    return P.resolve(seq.play());
+  }).
+  delay(2000).
+  then(()=>P.resolve(seq.softpause())).
+  delay(2000).
+  then(()=>{
+    // softpause allows pending members of a group to be emitted
+    console.log(sum); // will be 4 because of softpause
+    return P.resolve(seq.stop());
+  })
 ```
 
 ## API
