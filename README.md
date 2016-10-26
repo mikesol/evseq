@@ -46,7 +46,7 @@ P.resolve(seq.play()).
     // softpause allows pending members of a group to be emitted
     console.log(sum); // will be 4 because of softpause
     return P.resolve(seq.stop());
-  })
+  });
 ```
 
 ## API
