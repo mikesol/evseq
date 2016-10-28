@@ -9,7 +9,7 @@
     "pretest-coverage": "npm run build",
     "test-coverage": "istanbul cover node_modules/.bin/_mocha --report lcovonly -- --ui mocha-qunit-ui -b -R spec",
     "posttest-coverage": "remap-istanbul -i coverage/coverage.json -o coverage/coverage-remapped.json -b dist",
-    "ci": "npm run test-coverage && codecov < coverage/coverage-remapped.json",
+    "ci": "npm run test-coverage && codecov -f coverage/coverage-remapped.json",
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
     "prepublish": "npm run build",
     "test": "./node_modules/.bin/mocha --ui mocha-qunit-ui -b"
